@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="%APPLICATION_NAME%" default="compile" basedir=".">
+
+    <property name="play.path" value="%PLAYHOME%"/>
+
+    <path id="compile.classpath">
+        <pathelement path="${play.path}/framework/classes"/>
+        <fileset dir="${play.path}/framework/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${play.path}/framework">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="lib" erroronmissingdir="false">
+            <include name="*.jar"/>
+        </fileset>
+        %MODULES_CLASSES%
+    </path>
+
+    <path id="compile.modulesrc">
+        %MODULES_SOURCES%
+    </path>
+
+    <target name="clean">
+        <delete dir="tmp" failonerror="false"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="tmp/classes"/>
+        <javac srcdir="app" destdir="tmp/classes" debug="true">
+            <classpath refid="compile.classpath"/>
+            <sourcepath refid="compile.modulesrc"/>
+        </javac>
+    </target>
+
+    <macrodef name="play">
+        <attribute name="command"/>
+        <sequential>
+            <exec executable="cmd.exe" osfamily="winnt">
+                <arg line="/c ${play.path}/play.bat @{command}"/>
+            </exec>
+            <exec executable="bash" osfamily="unix">
+                <arg line="${play.path}/play @{command}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <target name="test">
+        <play command="auto-test"/>
+        <fail message="There were test failures.">
+            <condition>
+                <not>
+                    <resourcecount count="1">
+                        <fileset dir="test-result" includes="result.success"/>
+                    </resourcecount>
+                </not>
+            </condition>
+        </fail>
+    </target>
+
+    <target name="run">
+        <play command="run"/>
+    </target>
+
+</project>
