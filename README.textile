@@ -1,6 +1,8 @@
 h1. Play Antify Module
 
-Generates ant build.xml file for an play application to be used for example with continuous integration server like Hudson.
+Generates ant build.xml file for an play application to be used for example with continuous integration server like Hudson. 
+
+Tested with play 1.1 on windows and unix.
 
 h2. Features
 
