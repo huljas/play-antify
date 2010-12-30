@@ -1,0 +1,23 @@
+h1. Play Antify Module
+
+Generates ant build.xml file for an play application to be used for example with continuous integration server like Hudson.
+
+h2. Features
+
+* Generates classpath for your application
+* Tries to make the paths relative to either play.home or basedir
+* Generates normal ant tasks for play run, play test, play auto-test etc to be used as such or as  examples for your own tasks.
+* Contains macrodef for running the play python script from ant
+
+h2. Usage
+
+Add the module to your application's __application.conf__
+
+*module.antify=[path to module]*
+
+Run the antify in your application directory
+
+*play antify*
+
+Now you should have a __build.xml__ that you can modify to suite your needs.
+

@@ -4,22 +4,22 @@
 
     <property name="play.path" value="%PLAYHOME%"/>
 
+    <property name="antify.path" value="%ANTIFYHOME%"/>
+
+     <!-- includes antcontrib tasks -->
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="${antify.path}/lib/ant-contrib-0.6.jar"/>
+        </classpath>
+    </taskdef>
+
     <!-- classpath for compiling and running play -->
-    <path id="compile.classpath">
+    <path id="play.classpath">
         <pathelement path="${play.path}/framework/classes"/>
         <fileset dir="${play.path}/framework/lib">
             <include name="*.jar"/>
         </fileset>
         <fileset dir="${play.path}/framework">
-            <include name="*.jar"/>
-        </fileset>
-        <!-- this is required when running play in test mode  -->
-        <fileset dir="${play.path}/modules/testrunner/lib">
-            <include name="*.jar"/>
-        </fileset>
-        <!-- cobertura module just in case you are running tests -->
-        <!-- TODO: generate this -->
-        <fileset dir="${play.path}/modules/cobertura-2.0/lib" erroronmissingdir="false">
             <include name="*.jar"/>
         </fileset>
         <fileset dir="lib" erroronmissingdir="false">
@@ -28,7 +28,15 @@
 %MODULES_CLASSES%
     </path>
 
-    <!-- classpath for testrunner user in auto-test -->
+    <!-- classpath for running play in test mode -->
+    <path id="test.classpath">
+        <path refid="play.classpath"/>
+        <fileset dir="${play.path}/modules/testrunner/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- classpath for firephoque test runner -->
     <path id="testrunner.classpath">
         <fileset dir="${play.path}/modules/testrunner/lib">
             <include name="*.jar"/>
@@ -61,8 +69,6 @@
         </sequential>
     </macrodef>
 
-
-
     <target name="clean" description="Cleans the tmp folder">
         <delete dir="tmp" failonerror="false"/>
     </target>
@@ -70,77 +76,69 @@
     <target name="compile" description="Compile all java sources">
         <mkdir dir="tmp/classes"/>
         <javac srcdir="app" destdir="tmp/classes" debug="true">
-            <classpath refid="compile.classpath"/>
+            <classpath refid="play.classpath"/>
             <sourcepath refid="compile.modulesrc"/>
         </javac>
     </target>
 
-    <!-- TODO: Fix test server hanging -->
-    <target name="auto-test" description="Automatically run all application tests">
-        <delete dir="${basedir}/tmp"/>
-
-        <parallel>
-            <java classname="play.server.Server" fork="yes" failonerror="yes">
-                <classpath refid="compile.classpath"/>
-                <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
-                <sysproperty key="play.id" value="test"/>
-                <sysproperty key="application.path" value="${basedir}"/>
-            </java>
-
-            <sequential>
-                <sleep seconds="5"/>
-                <java classname="play.modules.testrunner.FirePhoque" fork="yes" failonerror="yes">
-                    <classpath refid="testrunner.classpath"/>
-                    <sysproperty key="application.url" value="http://localhost:9000"/>
-                </java>
-                <echo message="Test run completed"/>
-                <fail message="There were test failures.">
-                    <condition>
-                        <not>
-                            <resourcecount count="1">
-                                <fileset dir="${basedir}/test-result" includes="result.passed"/>
-                            </resourcecount>
-                        </not>
-                    </condition>
-                </fail>
-                <fail message="Test run success." status="0">
-                    <condition>
-                        <resourcecount count="1">
-                            <fileset dir="test-result" includes="result.passed"/>
-                        </resourcecount>
-                    </condition>
-                </fail>
-            </sequential>
-        </parallel>
-    </target>
-
-    <target name="run" description="Run the application">
-        <java classname="play.server.Server" fork="yes">
-            <classpath refid="compile.classpath"/>
+    <target name="play-run" description="Runs the application">
+        <java classname="play.server.Server" fork="yes" failonerror="yes">
+            <classpath refid="play.classpath"/>
             <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
             <sysproperty key="play.id" value=""/>
             <sysproperty key="application.path" value="${basedir}"/>
         </java>
     </target>
 
-    <target name="test" description="Run the application in test mode">
-        <java classname="play.server.Server" fork="yes">
-            <classpath refid="compile.classpath"/>
-            <jvmarg line="-javaagent:${play.path}/framework/play.jar -Xdebug"/>
+    <target name="play-test" description="Run the application in test mode">
+        <java classname="play.server.Server" fork="yes" failonerror="yes">
+            <classpath refid="test.classpath"/>
+            <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
             <sysproperty key="play.id" value="test"/>
-            <sysproperty key="play.debug" value="true"/>
             <sysproperty key="application.path" value="${basedir}"/>
         </java>
     </target>
 
     <target name="precompile" description="Compile all java sources and templates">
-        <java classname="play.server.Server" fork="yes">
-            <classpath refid="compile.classpath"/>
+        <java classname="play.server.Server" fork="yes" failonerror="yes">
+            <classpath refid="play.classpath"/>
             <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
-            <sysproperty key="play.id" value=""/>
             <sysproperty key="application.path" value="${basedir}"/>
-            <sysproperty key="precompile" value="yes"/>
+            <sysproperty key="play.id" value=""/>
+            <sysproperty key="precompile" value="true"/>
         </java>
+    </target>
+
+    <target name="auto-test" description="Automatically run all application tests">
+        <delete dir="${basedir}/tmp"/>
+
+        <!-- Start server to the background -->
+        <forget>
+            <java classname="play.server.Server" fork="yes" failonerror="yes" output="${basedir}/logs/system.out">
+                <classpath refid="test.classpath"/>
+                <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
+                <sysproperty key="play.id" value="test"/>
+                <sysproperty key="application.path" value="${basedir}"/>
+            </java>
+        </forget>
+
+        <!-- Wait a bit for the server to come up, then run the tests -->
+        <sleep seconds="5"/>
+        <java classname="play.modules.testrunner.FirePhoque" fork="yes" failonerror="yes">
+            <classpath refid="testrunner.classpath"/>
+            <sysproperty key="application.url" value="http://localhost:9000"/>
+        </java>
+
+        <!-- Check if the test was success -->
+        <fail message="There were test failures.">
+            <condition>
+                <not>
+                    <resourcecount count="1">
+                        <fileset dir="${basedir}/test-result" includes="result.passed"/>
+                    </resourcecount>
+                </not>
+            </condition>
+        </fail>
     </target>
 
 </project>
