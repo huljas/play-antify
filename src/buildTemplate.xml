@@ -81,11 +81,13 @@
         </javac>
     </target>
 
+    
     <target name="play-run" description="Runs the application">
         <java classname="play.server.Server" fork="yes" failonerror="yes">
             <classpath refid="play.classpath"/>
-            <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
+            <jvmarg line="-javaagent:${play.path}/framework/play.jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
             <sysproperty key="play.id" value=""/>
+            <sysproperty key="play.debug" value="true"/>
             <sysproperty key="application.path" value="${basedir}"/>
         </java>
     </target>
@@ -93,8 +95,9 @@
     <target name="play-test" description="Run the application in test mode">
         <java classname="play.server.Server" fork="yes" failonerror="yes">
             <classpath refid="test.classpath"/>
-            <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
+            <jvmarg line="-javaagent:${play.path}/framework/play.jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
             <sysproperty key="play.id" value="test"/>
+            <sysproperty key="play.debug" value="true"/>
             <sysproperty key="application.path" value="${basedir}"/>
         </java>
     </target>
@@ -110,11 +113,14 @@
     </target>
 
     <target name="auto-test" description="Automatically run all application tests">
+        <!-- Cleanup -->
         <delete dir="${basedir}/tmp"/>
+        <delete dir="${basedir}/test-result"/>
 
         <!-- Start server to the background -->
         <forget>
-            <java classname="play.server.Server" fork="yes" failonerror="yes" output="${basedir}/logs/system.out">
+            <property name="server.output" value="${basedir}/logs/system.out"/>
+            <java classname="play.server.Server" fork="true" output="${server.output}">
                 <classpath refid="test.classpath"/>
                 <jvmarg line="-javaagent:${play.path}/framework/play.jar"/>
                 <sysproperty key="play.id" value="test"/>
@@ -122,14 +128,26 @@
             </java>
         </forget>
 
-        <!-- Wait a bit for the server to come up, then run the tests -->
+        <!-- Wait a bit for the server to come up -->
         <sleep seconds="5"/>
+
+        <!-- Get the application.host from the server output -->
+        <loadfile srcfile="${server.output}" property="output"/>
+        <propertyregex property="host" override="true" input="${output}" select="\2" casesensitive="false" regexp=".*(Go to http://)(.*)(/@tests to run the tests).*"/>
+        <if>
+            <not><isset property="host"/></not>
+            <then>
+                <fail message="Server failed to start in time!"/>
+            </then>
+        </if>
+        <property name="application.url" value="http://${host}"/>
+
+        <!-- Run the tests and check if they passed -->
+        <echo message="Testing server at: ${application.url}"/>
         <java classname="play.modules.testrunner.FirePhoque" fork="yes" failonerror="yes">
             <classpath refid="testrunner.classpath"/>
-            <sysproperty key="application.url" value="http://localhost:9000"/>
+            <sysproperty key="application.url" value="${application.url}"/>
         </java>
-
-        <!-- Check if the test was success -->
         <fail message="There were test failures.">
             <condition>
                 <not>
@@ -139,6 +157,8 @@
                 </not>
             </condition>
         </fail>
+        <!-- Trigger the cobertura report -->
+        <get verbose="false" ignoreerrors="true" src="${application.url}/@cobertura/generateReport" dest="${basedir}/test-result/cobertura_generateReport.html"/>
     </target>
 
 </project>
