@@ -30,6 +30,9 @@
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
   <component name="IdProvider" IDEtalkID="B85CD7DDFAF77AE2F5BE6BF347CCAAED" />
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
@@ -190,6 +193,18 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+  </component>
+  <component name="libraryTable">
+    <library name="module-lib">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/lib/ant-1.8.2.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/ant-contrib-0.6.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../apache-ant-1.8.2/src/main" />
+      </SOURCES>
+    </library>
   </component>
 </project>
 
