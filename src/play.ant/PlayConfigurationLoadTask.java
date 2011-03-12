@@ -79,7 +79,7 @@ public class PlayConfigurationLoadTask {
                 s = project.replaceProperties(s);
                 File moduleDir;
                 if (!FileUtils.isAbsolutePath(s)) {
-                    moduleDir = new File(new File(applicationDir, "conf"), s);
+                    moduleDir = new File(applicationDir, s);
                 } else {
                     moduleDir = new File(s);
                 }
