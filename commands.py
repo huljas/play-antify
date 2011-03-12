@@ -18,7 +18,7 @@ def execute(**kargs):
     env = kargs.get("env")
 
     if command == "antify":
-        print "~ Generating ant build.xml"
+        print "~ Generating ant project file ..."
 
         app.check()
         modules = app.modules()
@@ -32,22 +32,10 @@ def execute(**kargs):
 
         buildFile = os.path.join(app.path, 'build.xml')
         shutil.copyfile(os.path.join(modAntify, 'src/buildTemplate.xml'), buildFile)
-        cpXML = ""
-        replaceAll(buildFile, r'%PLAYHOME%', playPath.replace('\\', '/'))
         replaceAll(buildFile, r'%APPLICATION_NAME%', application_name)
-        parentPath = os.path.normpath(os.path.join(app.path, ".."))
         replaceAll(buildFile, r'%ANTIFYHOME%', normalizePath(antifyPath, playPath, basedir))
-        if len(modules):
-            mClasses = ""
-            mSrc = ""
-            for module in modules:
-                mClasses += '        <fileset dir="%s/lib" erroronmissingdir="false">\n            <include name="*.jar"/>\n        </fileset>\n' % normalizePath(module, playPath, basedir)
-                mSrc += '        <pathelement path="%s/app"/>\n' % normalizePath(module, playPath, basedir)
-            replaceAll(buildFile, r'%MODULES_CLASSES%', mClasses)
-            replaceAll(buildFile, r'%MODULES_SOURCES%', mSrc)
-        else:
-            replaceAll(buildFile, r'%MODULES_CLASSES%', '')
-            replaceAll(buildFile, r'%MODULES_SOURCES%', '')
+        print "~ File %s has been generated!" % buildFile
+
 
 def normalizePath(path, playPath, basedir):
     basedirParent = os.path.normpath(os.path.join(basedir, ".."))
