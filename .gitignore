@@ -1,2 +1,7 @@
-*.pyc
 *.iws
+*.iml
+*.pyc
+*.ipr
+tmp/
+dist/
+lib/messages.jar
