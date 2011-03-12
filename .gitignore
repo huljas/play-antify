@@ -7,3 +7,8 @@ dist/
 lib/antify.jar
 out/
 test-result/
+cobertura.ser
+precompiled/
+sandbox/
+war/
+
