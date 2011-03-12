@@ -1,46 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="play-antify" basedir="." default="jar">
 
-    <property name="src.dir" value="src"/>
-    <property name="classes.dir" value="build/classes"/>
+<project name="antify" default="build" basedir=".">
 
-    <path id="compile.classpath">
-        <fileset dir="lib">
+    <property name="play.path" value="c:\code\play"/>
+
+    <path id="project.classpath">
+        <pathelement path="${play.path}/framework/classes"/>
+        <fileset dir="${play.path}/framework/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${play.path}/framework">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="lib" erroronmissingdir="false">
             <include name="*.jar"/>
         </fileset>
     </path>
 
-    <target name="clean" description="Delete all generated files">
-        <delete dir="${classes.dir}" failonerror="false"/>
-        <delete file="build/${ant.project.name}.jar"/>
+    <target name="clean">
+        <delete dir="tmp"/>
     </target>
 
-    <target name="compile" description="Compiles the Task">
-        <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="compile.classpath"/>
+    <target name="build" depends="compile">
+        <copy todir="tmp/classes">
+            <fileset dir="src">
+                <include name="**/*.properties"/>
+                <include name="**/*.xml"/>
+                <include name="**/play.plugins"/>
+                <include name="**/play.static"/>
+            </fileset>
+        </copy>
+        <jar destfile="lib/${ant.project.name}.jar" basedir="tmp/classes">
+            <manifest>
+                <section name="Play-module">
+                    <attribute name="Specification-Title" value="play-messages"/>
+                </section>
+            </manifest>
+        </jar>
+        <delete dir="tmp" />
     </target>
 
-    <target name="jar" description="JARs the Task" depends="compile">
-        <jar destfile="build/${ant.project.name}.jar" basedir="${classes.dir}"/>
+    <target name="compile">
+        <mkdir dir="tmp/classes" />
+        <javac srcdir="src" destdir="tmp/classes" target="1.5" debug="true">
+            <classpath refid="project.classpath" />
+        </javac>
     </target>
 
-    <target name="test-it" depends="clean,compile,jar">
-        <property name="play.path" value="../play"/>
-        <taskdef classname="play.ant.PlayModulesClasspathTask" name="playmodules-classpath">
-            <classpath>
-                <path refid="compile.classpath"/>
-                <pathelement location="build/${ant.project.name}.jar"/>
-            </classpath>
-        </taskdef>
-        <taskdef classname="play.ant.PlayConfLoadTask" name="playconfload">
-            <classpath>
-                <path refid="compile.classpath"/>
-                <pathelement location="build/${ant.project.name}.jar"/>
-            </classpath>
-        </taskdef>
-
-        <playmodules-classpath playId="%serverB" srcFile="${basedir}/test/test-application.conf"/>
-        <playconfload playId="%test" srcfile="${basedir}/test/test-application.conf"/>
+    <target name="package" depends="clean,build">
+        <input message="What is the module version number?" addproperty="version"/>
+        <input message="What are the playframework versions required?" addproperty="frameworkVersions"/>
+        <echo file="manifest" message="version=${version}${line.separator}frameworkVersions=${frameworkVersions}"/>
+        <zip destfile="dist/${ant.project.name}-${version}.zip">
+            <fileset dir="${basedir}">
+                <include name="app/**"/>
+                <include name="src/**"/>
+                <include name="conf/**"/>
+                <include name="public/**"/>
+                <include name="lib/**"/>
+                <include name="documentation/**"/>
+                <include name="build.xml"/>
+                <include name="manifest"/>
+                <include name="*.py"/>
+                <include name="README*"/>
+                <include name="COPYING"/>
+            </fileset>
+        </zip>
+        <delete file="manifest"/>
     </target>
 
 </project>
