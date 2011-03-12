@@ -89,6 +89,10 @@ And then run play just by:
         </classpath>
     </taskdef>
 
+    <target name="clean" description="Cleans build and test directories">
+        <delete dir="${basedir}/tmp"/>
+        <delete dir="${basedir}/test-result"/>
+    </target>
 
     <target name="run" description="Runs the application">
         <playconfload applicationDir="${basedir}" playId="${play.id}"/>
@@ -190,5 +194,16 @@ And then run play just by:
 
     </target>
 
+    <target name="package" depends="clean,precompile">
+        <mkdir dir="dist"/>
+        <zip file="dist/${ant.project.name}.zip">
+            <fileset dir="${basedir}">
+                <include name="precompiled/**"/>
+                <include name="conf/**"/>
+                <include name="public/**"/>
+                <include name="lib/**"/>
+            </fileset>
+        </zip>
+    </target>
 
 </project>
