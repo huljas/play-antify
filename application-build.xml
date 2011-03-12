@@ -202,6 +202,7 @@ And then run play just by:
                 <include name="conf/**"/>
                 <include name="public/**"/>
                 <include name="lib/**"/>
+                <include name="app/**"/>
             </fileset>
         </zip>
     </target>
