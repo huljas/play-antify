@@ -4,4 +4,6 @@
 *.ipr
 tmp/
 dist/
-lib/messages.jar
+lib/antify.jar
+out/
+test-result/
