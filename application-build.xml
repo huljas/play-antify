@@ -194,7 +194,7 @@ And then run play just by:
 
     </target>
 
-    <target name="package" depends="clean,precompile">
+    <target name="package" depends="clean,precompile" description="Packages your application into a zip file package">
         <mkdir dir="dist"/>
         <zip file="dist/${ant.project.name}.zip">
             <fileset dir="${basedir}">
@@ -208,15 +208,15 @@ And then run play just by:
         </zip>
     </target>
 
-    <target name="start">
+    <target name="start" description="Start the application in the background">
         <play-python command="start" options="--%${play.id}"/>
     </target>
 
-    <target name="restart">
+    <target name="restart" description="Restart the running application">
         <play-python command="restart" options="--%${play.id}"/>
     </target>
 
-    <target name="stop">
+    <target name="stop" description="Stop the running application">
         <play-python command="stop" options="--%${play.id}"/>
     </target>
 

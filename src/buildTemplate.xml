@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="%APPLICATION_NAME%" default="precompile" basedir=".">
+<project name="%APPLICATION_NAME%" default="auto-test" basedir=".">
     <property name="play.antify.path" value="%ANTIFYHOME%"/>
     <import file="${play.antify.path}/application-build.xml"/>
 
