@@ -25,7 +25,6 @@ And then run play just by:
 
     <property environment="env"/>
     <property name="play.path" value="${env.PLAY_PATH}"/>
-    <property name="play.antify.path" value="${play.path}/modules/antify-1.0"/>
     <property name="application.path" value="${basedir}"/>
     <property name="play.id" value=""/>
     <property name="precompiled" value="false"/>
@@ -73,12 +72,13 @@ And then run play just by:
     -->
     <macrodef name="play-python">
         <attribute name="command"/>
+        <attribute name="options"/>
         <sequential>
             <exec executable="cmd.exe" osfamily="winnt">
-                <arg line="/c ${play.path}/play.bat @{command}"/>
+                <arg line="/c ${play.path}/play.bat @{command} @{options}"/>
             </exec>
             <exec executable="python" osfamily="unix">
-                <arg line="${play.path}/play @{command}"/>
+                <arg line="${play.path}/play @{command} @{options}"/>
             </exec>
         </sequential>
     </macrodef>
@@ -205,6 +205,18 @@ And then run play just by:
                 <include name="app/**"/>
             </fileset>
         </zip>
+    </target>
+
+    <target name="start">
+        <play-python command="start" options="--%${play.id}"/>
+    </target>
+
+    <target name="restart">
+        <play-python command="restart" options="--%${play.id}"/>
+    </target>
+
+    <target name="stop">
+        <play-python command="stop" options="--%${play.id}"/>
     </target>
 
 </project>
