@@ -203,6 +203,7 @@ And then run play just by:
                 <include name="public/**"/>
                 <include name="lib/**"/>
                 <include name="app/**"/>
+                <include name="*.xml"/>
             </fileset>
         </zip>
     </target>
