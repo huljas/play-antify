@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Usage example:
+    ant -Dplay.path=<play path> auto-test
 
-<project name="%APPLICATION_NAME%" default="auto-test" basedir=".">
+Or with PLAY_PATH environment variable:
+    ant auto-test
+-->
+<project name="%APPLICATION_NAME%" basedir=".">
     <property name="play.antify.path" value="%ANTIFYHOME%"/>
     <import file="${play.antify.path}/application-build.xml"/>
 
