@@ -2,7 +2,7 @@
 
 <project name="antify" default="build" basedir=".">
 
-    <property name="play.path" value="c:\code\play"/>
+    <property name="play.path" value="c:\code\play-master"/>
 
     <path id="project.classpath">
         <pathelement path="${play.path}/framework/classes"/>
@@ -57,7 +57,7 @@
                 <include name="src/**"/>
                 <include name="conf/**"/>
                 <include name="public/**"/>
-                <include name="lib/**"/>
+                <include name="lib/antify.jar"/>
                 <include name="documentation/**"/>
                 <include name="build.xml"/>
                 <include name="manifest"/>
