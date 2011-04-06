@@ -8,6 +8,8 @@ Or with PLAY_PATH environment variable:
 -->
 <project name="%APPLICATION_NAME%" basedir=".">
     <property name="play.antify.path" value="%ANTIFYHOME%"/>
+    <property name="play.default.path" value="%PLAYPATH%"/>
+    <property name="test.start.delay" value="5"/>
     <import file="${play.antify.path}/application-build.xml"/>
 
 </project>

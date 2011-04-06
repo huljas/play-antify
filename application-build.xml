@@ -6,10 +6,16 @@ General ant build file for play applications.
 <project>
 
     <property environment="env"/>
-    <property name="play.path" value="${env.PLAY_PATH}"/>
+    <condition property="play.path" value="${env.PLAY_PATH}">
+        <isset property="env.PLAY_PATH"/>
+    </condition>
+    <property name="play.path" value="${play.default.path}"/>
+    <property name="test.start.delay" value="5"/>
     <property name="application.path" value="${basedir}"/>
     <property name="play.id" value=""/>
     <property name="precompiled" value="false"/>
+
+    <echo message="Using play at ${play.path}"/>
 
     <!-- classpath including play classes and dependencies -->
     <path id="play.classpath">
@@ -149,6 +155,7 @@ General ant build file for play applications.
 
             <sequential>
                 <echo message="Waiting for the server to start up at ${application.url}/@tests"/>
+                <sleep seconds="${test.start.delay}"/>
                 <get verbose="false" ignoreerrors="false" src="${application.url}/@tests"
                      dest="${basedir}/test-result/auto-test-@tests.html"/>
 
