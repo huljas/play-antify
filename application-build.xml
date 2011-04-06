@@ -5,11 +5,6 @@ General ant build file for play applications.
 -->
 <project>
 
-    <property environment="env"/>
-    <condition property="play.path" value="${env.PLAY_PATH}">
-        <isset property="env.PLAY_PATH"/>
-    </condition>
-    <property name="play.path" value="${play.default.path}"/>
     <property name="test.start.delay" value="5"/>
     <property name="application.path" value="${basedir}"/>
     <property name="play.id" value=""/>

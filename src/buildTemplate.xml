@@ -7,8 +7,15 @@ Or with PLAY_PATH environment variable:
     ant auto-test
 -->
 <project name="%APPLICATION_NAME%" basedir=".">
-    <property name="play.antify.path" value="%ANTIFYHOME%"/>
+
     <property name="play.default.path" value="%PLAYPATH%"/>
+    <property environment="env"/>
+    <condition property="play.path" value="${env.PLAY_PATH}">
+        <isset property="env.PLAY_PATH"/>
+    </condition>
+    <property name="play.path" value="${play.default.path}"/>
+
+    <property name="play.antify.path" value="%ANTIFYHOME%"/>
     <property name="test.start.delay" value="5"/>
     <import file="${play.antify.path}/application-build.xml"/>
 
