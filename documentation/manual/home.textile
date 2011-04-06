@@ -54,5 +54,21 @@ BUILD SUCCESSFUL
 Total time: 12 seconds
 
 To see all targets just run
+
 bc. ant -p
+
+h2. Changing the play path
+
+The generated *build.xml* contains a prefilled value for the play path property which is used by default. However it may be necessary to set the value for something else depending on the environment. This can be done in two ways:
+
+- Override the path with a property when running the ant task, for example
+
+bc. ant -Dplay.path=<path to play> auto-test
+
+- Set the path as an environment variable
+
+bc. export PLAY_PATH=<path to play>
+ant auto-test
+
+
 
